@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P/L Tracker Free</title>
+<meta name="description" content="Jejak untung rugi bisnes online: ads, sales, COGS dan RTS dalam satu app percuma. Data kekal dalam browser anda.">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f8fafc;--card:#fff;--line:#e2e8f0;--text:#0f172a;--mute:#64748b;--blue:#2563eb;--blue-soft:#eff6ff;--green:#059669;--green-soft:#ecfdf5;--rose:#e11d48;--rose-soft:#fff1f2;--amber:#b45309;--amber-soft:#fffbeb;--orange:#c2410c;--orange-soft:#fff7ed;--r:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+.app{display:flex;min-height:100vh}
+.side{width:240px;flex:none;background:#fff;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:0 8px 18px}
+.logo img{width:34px;height:34px}
+.logo b{color:var(--blue)}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:11px 12px;border-radius:12px;color:var(--mute);font-weight:600;font-size:14.5px;cursor:pointer;text-align:left}
+.nav-btn:hover{background:#f1f5f9}
+.nav-btn.on{background:var(--blue-soft);color:var(--blue)}
+.nav-btn.on.rts{background:var(--rose-soft);color:var(--rose)}
+.nav-btn svg{width:20px;height:20px;flex:none}
+.side .foot{margin-top:auto;font-size:11.5px;color:var(--mute);padding:10px 8px 0}
+main{flex:1;min-width:0;padding:28px 32px 90px;max-width:1280px}
+.bottom{display:none}
+.view{display:none}
+.view.on{display:block}
+.head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:20px}
+.head h2{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters input,.filters select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;min-height:38px}
+.seg{display:inline-flex;background:#e2e8f0;border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:8px;font-weight:600;color:var(--mute);cursor:pointer}
+.seg button.on{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;min-height:38px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#f8fafc}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#1d4ed8}
+.btn.danger{background:var(--rose);border-color:var(--rose);color:#fff}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--mute)}
+.btn.sm{min-height:30px;padding:4px 10px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card+.card,.grid+.card,.card+.grid,.grid+.grid{margin-top:18px}
+.card h3{font-size:16px;font-weight:700}
+.card .sub{color:var(--mute);font-size:13px;margin-top:2px}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(5,1fr)}
+.stats{grid-template-columns:repeat(4,1fr)}
+.kpi{border-radius:var(--r);padding:16px;border:1px solid var(--line);min-width:0}
+.kpi .lbl{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.kpi .val{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:6px;overflow-wrap:anywhere}
+.kpi .note{font-size:12px;margin-top:4px;color:var(--mute)}
+.kpi.orange{background:var(--orange-soft);color:var(--orange)}
+.kpi.green{background:var(--green-soft);color:var(--green)}
+.kpi.rose{background:var(--rose-soft);color:var(--rose)}
+.kpi.red{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+.kpi.blue{background:var(--blue-soft);color:var(--blue);border-color:#bfdbfe}
+.kpi .val{color:var(--text)}
+.kpi.blue .val{color:#1e40af}
+.kpi.red .val{color:#b91c1c}
+.mini{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.mini .lbl{font-size:12px;color:var(--mute);font-weight:600}
+.mini .val{font-size:20px;font-weight:800;margin-top:2px}
+.mini .note{font-size:12px;color:var(--mute);margin-top:2px}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;letter-spacing:0;text-transform:none}
+.chip.good{background:#d1fae5;color:#047857}.chip.bad{background:#fee2e2;color:#b91c1c}
+.badge{display:inline-block;font-weight:700;font-size:12px;padding:2px 8px;border-radius:8px}
+.b-good{background:var(--green-soft);color:var(--green)}.b-warn{background:var(--amber-soft);color:var(--amber)}.b-bad{background:var(--rose-soft);color:var(--rose)}.b-na{background:#f1f5f9;color:var(--mute)}
+.bar{height:14px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#2563eb);border-radius:99px;transition:width .6s}
+.bar>i.done{background:linear-gradient(90deg,#10b981,#059669)}
+.row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mute{color:var(--mute)}
+.pos{color:var(--green)}.neg{color:var(--rose)}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--mute);margin:8px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:99px;margin-right:6px}
+.chart{position:relative}
+.chart svg{width:100%;height:auto;display:block;touch-action:pan-y}
+.tip{position:absolute;top:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:10px;padding:8px 10px;font-size:12px;transform:translateX(-50%);white-space:nowrap;display:none;z-index:2}
+.empty{padding:36px 10px;text-align:center;color:var(--mute)}
+.tbl{overflow-x:auto;margin:0 -20px -20px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);text-align:left;padding:10px 14px;background:#f8fafc;white-space:nowrap}
+td{padding:11px 14px;border-top:1px solid #f1f5f9;white-space:nowrap}
+.r{text-align:right}.c{text-align:center}
+tbody tr:hover{background:#f8fafc}
+tfoot td{font-weight:800;background:#f8fafc;border-top:2px solid var(--line)}
+.icon-btn{border:0;background:none;color:#94a3b8;cursor:pointer;padding:4px;border-radius:8px}
+.icon-btn:hover{color:var(--blue);background:var(--blue-soft)}
+.icon-btn.del:hover{color:var(--rose);background:var(--rose-soft)}
+.icon-btn svg{width:18px;height:18px;display:block}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.prod .pk{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.prod .pk span{background:#f1f5f9;border-radius:8px;padding:3px 9px;font-size:12.5px}
+.banner{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--amber-soft);border:1px solid #fde68a;color:#92400e;border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.start{text-align:center;padding:34px 20px}
+.start h3{font-size:20px}
+.start ol{text-align:left;max-width:420px;margin:16px auto;padding-left:20px;color:var(--mute)}
+.start .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+dialog{border:0;border-radius:20px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:0 25px 60px rgba(15,23,42,.35);color:var(--text)}
+dialog::backdrop{background:rgba(15,23,42,.5)}
+dialog form{display:flex;flex-direction:column;max-height:calc(100vh - 24px)}
+.dh{padding:18px 22px;border-bottom:1px solid var(--line);font-size:17px;font-weight:800}
+.db{padding:18px 22px;overflow-y:auto;display:grid;gap:14px}
+.df{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#f8fafc}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld label,.pk-in label{display:block;font-size:12.5px;font-weight:700;color:#334155;margin-bottom:4px}
+.fld input,.fld select,.fld textarea,.pk-in input{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:9px 11px;min-height:40px;background:#fff}
+.fld input:focus,.fld select:focus,.fld textarea:focus,.pk-in input:focus{outline:2px solid #93c5fd;border-color:var(--blue)}
+.fld .hint{font-size:12px;color:var(--mute);margin-top:4px}
+.pkrow{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;align-items:end;padding:10px;background:#f8fafc;border:1px solid var(--line);border-radius:12px}
+.pkrow .nm{font-weight:700;font-size:13px;align-self:center;overflow-wrap:anywhere}
+.pkedit{display:grid;grid-template-columns:1.6fr 1fr auto;gap:8px;align-items:end}
+.preview{background:var(--blue-soft);border:1px solid #bfdbfe;border-radius:12px;padding:12px 14px;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.preview b{font-size:14px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}
+.toast.err{background:var(--rose)}
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start}
+.set-grid .card{margin-top:0!important}
+.help{font-size:12.5px;color:var(--mute);margin-top:6px}
+.acts-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hidden{display:none!important}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis .kpi:last-child{grid-column:span 2}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){
+  .side{display:none}
+  main{padding:18px 14px 96px}
+  .head h2{font-size:22px}
+  .bottom{display:flex;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:20;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bottom .nav-btn{flex-direction:column;gap:2px;font-size:11px;padding:6px 2px;text-align:center;justify-content:center;flex:1;border-radius:10px}
+  .card{padding:16px}.tbl{margin:0 -16px -16px}
+  .kpi .val{font-size:20px}
+  .f2{grid-template-columns:1fr 1fr}
+  .pkrow{grid-template-columns:1fr 1fr}.pkrow .nm{grid-column:span 2}
+  .toast{bottom:92px}
+}
+@media print{
+  .side,.bottom,.filters .btn,.filters .seg,.no-print,.icon-btn,.banner,.toast{display:none!important}
+  main{padding:0;max-width:none}body{background:#fff}.card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<noscript><p style="padding:24px">App ini perlukan JavaScript.</p></noscript>
+<div class="app">
+  <aside class="side" id="sideNav"></aside>
+  <main>
+    <div id="banner"></div>
+
+    <!-- DASHBOARD -->
+    <section class="view" id="v-dashboard">
+      <div class="head">
+        <h2>Dashboard</h2>
+        <div class="filters">
+          <div class="seg" id="presets">
+            <button data-act="preset" data-p="month">Bulan ini</button>
+            <button data-act="preset" data-p="7">7 hari</button>
+            <button data-act="preset" data-p="30">30 hari</button>
+            <button data-act="preset" data-p="last">Bulan lepas</button>
+          </div>
+          <input type="date" id="dash-start" aria-label="Dari tarikh">
+          <input type="date" id="dash-end" aria-label="Hingga tarikh">
+          <select id="dash-prod" class="prod-filter" aria-label="Produk"></select>
+          <button class="btn" data-act="print">Cetak / PDF</button>
+        </div>
+      </div>
+      <div id="dashBody"></div>
+    </section>
+
+    <!-- REKOD HARIAN -->
+    <section class="view" id="v-records">
+      <div class="head">
+        <h2>Rekod Harian</h2>
+        <div class="filters">
+          <div class="seg" id="rtabs">
+            <button data-act="rtab" data-t="ads">Prestasi Iklan</button>
+            <button data-act="rtab" data-t="gp">Untung Kasar</button>
+          </div>
+          <input type="date" id="rec-start" aria-label="Dari tarikh">
+          <input type="date" id="rec-end" aria-label="Hingga tarikh">
+          <select id="rec-prod" class="prod-filter" aria-label="Produk"></select>
+          <button class="btn" data-act="clearRec">Reset</button>
+          <button class="btn" data-act="print">Cetak / PDF</button>
+          <button class="btn primary" data-act="newEntry">+ Rekod baru</button>
+        </div>
+      </div>
+      <div class="card" id="recBody"></div>
+    </section>
+
+    <!-- RETURN -->
+    <section class="view" id="v-returns">
+      <div class="head">
+        <h2>Return / RTS</h2>
+        <div class="filters">
+          <input type="date" id="ret-start" aria-label="Dari tarikh">
+          <input type="date" id="ret-end" aria-label="Hingga tarikh">
+          <select id="ret-prod" class="prod-filter" aria-label="Produk"></select>
+          <button class="btn" data-act="clearRet">Reset</button>
+          <button class="btn" data-act="print">Cetak / PDF</button>
+          <button class="btn primary" data-act="newReturn">+ Rekod return</button>
+        </div>
+      </div>
+      <div class="card" id="retBody"></div>
+    </section>
+
+    <!-- PRODUK -->
+    <section class="view" id="v-products">
+      <div class="head">
+        <h2>Produk</h2>
+        <div class="filters"><button class="btn primary" data-act="newProduct">+ Produk baru</button></div>
+      </div>
+      <div id="prodBody"></div>
+    </section>
+
+    <!-- TETAPAN -->
+    <section class="view" id="v-settings">
+      <div class="head"><h2>Tetapan &amp; Data</h2></div>
+      <div id="setBody"></div>
+    </section>
+  </main>
+</div>
+<nav class="bottom" id="botNav"></nav>
+<div class="toast hidden" id="toast"></div>
+
+<!-- DIALOG REKOD -->
+<dialog id="dlgEntry">
+  <form id="fEntry">
+    <div class="dh" id="entryTitle">Rekod harian</div>
+    <div class="db">
+      <div class="f2">
+        <div class="fld"><label for="e-date">Tarikh</label><input type="date" id="e-date" required></div>
+        <div class="fld"><label for="e-prod">Produk</label><select id="e-prod" required></select></div>
+      </div>
+      <div class="f2">
+        <div class="fld"><label for="e-ads">Belanja iklan / Ads (<span class="cur"></span>)</label><input type="number" id="e-ads" min="0" step="0.01" inputmode="decimal" placeholder="0.00"><div class="hint" id="e-fee"></div></div>
+        <div class="fld"><label for="e-sales">Jumlah Sales (<span class="cur"></span>)</label><input type="number" id="e-sales" min="0" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+      </div>
+      <div class="f2">
+        <div class="fld"><label for="e-orders">Jumlah order</label><input type="number" id="e-orders" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+        <div class="fld"><label for="e-visitors">Visitor / Landing page view</label><input type="number" id="e-visitors" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <div>
+        <div class="fld"><label>Pakej terjual (untuk kira COGS)</label></div>
+        <div id="e-pkgs" style="display:grid;gap:8px"></div>
+        <div class="help">Isi Sales dan Qty untuk order yang berjaya sahaja. Order yang di-RTS dimasukkan di menu Return / RTS.</div>
+      </div>
+      <div class="fld"><label for="e-remark">Catatan (pilihan)</label><input type="text" id="e-remark" maxlength="200"></div>
+      <div class="preview" id="e-preview"></div>
+    </div>
+    <div class="df"><button type="button" class="btn" data-close>Batal</button><button class="btn primary" type="submit">Simpan rekod</button></div>
+  </form>
+</dialog>
+
+<!-- DIALOG RETURN -->
+<dialog id="dlgReturn">
+  <form id="fReturn">
+    <div class="dh" id="retTitle">Rekod return</div>
+    <div class="db">
+      <div class="f2">
+        <div class="fld"><label for="r-date">Tarikh return</label><input type="date" id="r-date" required></div>
+        <div class="fld"><label for="r-prod">Produk</label><select id="r-prod" required></select></div>
+      </div>
+      <div>
+        <div class="fld"><label>Pakej dipulangkan</label></div>
+        <div id="r-pkgs" style="display:grid;gap:8px"></div>
+        <div class="help">COGS ialah kos barang yang hangus. Letak 0 jika barang boleh dijual semula.</div>
+      </div>
+      <div class="fld"><label for="r-ship">Kos pos / penghantaran hangus (<span class="cur"></span>)</label><input type="number" id="r-ship" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      <div class="fld"><label for="r-remark">Sebab / catatan (pilihan)</label><input type="text" id="r-remark" maxlength="200"></div>
+      <div class="preview" id="r-preview"></div>
+    </div>
+    <div class="df"><button type="button" class="btn" data-close>Batal</button><button class="btn primary" type="submit">Simpan return</button></div>
+  </form>
+</dialog>
+
+<!-- DIALOG PRODUK -->
+<dialog id="dlgProduct">
+  <form id="fProduct">
+    <div class="dh" id="prodTitle">Produk</div>
+    <div class="db">
+      <div class="fld"><label for="p-name">Nama produk</label><input type="text" id="p-name" maxlength="80" required></div>
+      <div>
+        <div class="fld"><label>Pakej dan kos (COGS seunit pakej)</label></div>
+        <div id="p-pkgs" style="display:grid;gap:8px"></div>
+        <div class="acts-row"><button type="button" class="btn sm" data-act="addPkg">+ Tambah pakej</button></div>
+        <div class="help">Contoh: Pakej 1 (1 botol) kos RM15, Pakej 2 (2 botol) kos RM28. COGS ini diisi automatik bila anda buat rekod, dan disimpan pada rekod itu supaya sejarah tak berubah bila anda tukar kos kemudian.</div>
+      </div>
+    </div>
+    <div class="df"><button type="button" class="btn" data-close>Batal</button><button class="btn primary" type="submit">Simpan produk</button></div>
+  </form>
+</dialog>
+
+<!-- DIALOG GENERIK -->
+<dialog id="dlgAsk">
+  <form id="fAsk">
+    <div class="dh" id="ask-title"></div>
+    <div class="db"><p id="ask-text" class="mute"></p><div class="fld hidden" id="ask-field"><label id="ask-label" for="ask-input"></label><input id="ask-input" type="number" step="any"></div></div>
+    <div class="df"><button type="button" class="btn" data-close>Batal</button><button class="btn primary" type="submit" id="ask-ok">OK</button></div>
+  </form>
+</dialog>
+
+<script>
+/*ENGINE-START*/
+const Engine = (() => {
+  const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; };
+  const div = (a, b) => { b = num(b); return b === 0 ? 0 : num(a) / b; };
+  const pad = n => String(n).padStart(2, '0');
+  const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parseDate = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (s, n) => { const d = parseDate(s); d.setDate(d.getDate() + n); return fmtDate(d); };
+  const diffDays = (a, b) => Math.round((parseDate(b) - parseDate(a)) / 86400000);
+  const daysInMonth = (y, m) => new Date(y, m, 0).getDate(); // m: 1-12
+
+  const sumItems = items => (items || []).reduce((t, i) => {
+    const q = num(i.qty);
+    return { qty: t.qty + q, cogs: t.cogs + q * num(i.cogs) };
+  }, { qty: 0, cogs: 0 });
+
+  // Satu rekod harian -> semua metrik iklan dan untung kasar
+  function entryMetrics(e) {
+    const rate = e.feeRate == null || e.feeRate === '' ? 0.08 : num(e.feeRate);
+    const adsFee = num(e.ads) * (1 + rate);
+    const sales = num(e.sales), orders = num(e.orders), visitors = num(e.visitors);
+    const { qty, cogs } = sumItems(e.items);
+    const gp = sales - cogs;
+    return {
+      adsFee, sales, orders, visitors, qty, cogs, gp,
+      gpMargin: div(gp, sales), net: gp - adsFee,
+      roas: div(sales, adsFee), aov: div(sales, orders), cpp: div(adsFee, orders),
+      cr: div(orders, visitors), cplv: div(adsFee, visitors)
+    };
+  }
+
+  function returnMetrics(r) {
+    const { qty, cogs } = sumItems(r.items);
+    const shipping = num(r.shipping);
+    return { qty, cogs, shipping, loss: cogs + shipping };
+  }
+
+  // Jumlah untuk satu set rekod. Net Profit = Sales - COGS - Ads(+fee) - Kerugian RTS
+  function summarize(entries, returns) {
+    const t = { sales: 0, adsFee: 0, orders: 0, visitors: 0, qty: 0, cogs: 0, gp: 0, retQty: 0, retCogs: 0, retShipping: 0, retLoss: 0 };
+    (entries || []).forEach(e => {
+      const m = entryMetrics(e);
+      t.sales += m.sales; t.adsFee += m.adsFee; t.orders += m.orders; t.visitors += m.visitors;
+      t.qty += m.qty; t.cogs += m.cogs; t.gp += m.gp;
+    });
+    (returns || []).forEach(r => {
+      const m = returnMetrics(r);
+      t.retQty += m.qty; t.retCogs += m.cogs; t.retShipping += m.shipping; t.retLoss += m.loss;
+    });
+    t.netProfit = t.gp - t.adsFee - t.retLoss;
+    t.netMargin = div(t.netProfit, t.sales);
+    t.gpMargin = div(t.gp, t.sales);
+    t.roas = div(t.sales, t.adsFee);
+    t.aov = div(t.sales, t.orders);
+    t.cpp = div(t.adsFee, t.orders);
+    t.cr = div(t.orders, t.visitors);
+    t.cplv = div(t.adsFee, t.visitors);
+    // Parsel dihantar = berjaya (qty) + dipulangkan
+    t.returnRate = div(t.retQty, t.qty + t.retQty);
+    // Anggaran sahaja, tidak ditolak dua kali (ads sudah ditolak sepenuhnya)
+    t.adsWasted = t.retQty * t.cpp;
+    return t;
+  }
+
+  const pctChange = (cur, prev) => (num(prev) === 0 ? null : (num(cur) - num(prev)) / Math.abs(num(prev)));
+
+  // ROAS (termasuk fee) di mana untung kasar = kos ads. Bawah ini = rugi.
+  function breakEvenRoas(entries) {
+    let sales = 0, cogs = 0;
+    (entries || []).forEach(e => { const m = entryMetrics(e); sales += m.sales; cogs += m.cogs; });
+    return sales > cogs && sales > 0 ? sales / (sales - cogs) : null;
+  }
+
+  function roasLevel(roas, be) {
+    if (be) return roas < be ? 'bad' : (roas < be * 1.5 ? 'warn' : 'good');
+    return roas > 3 ? 'good' : (roas > 1.5 ? 'warn' : 'bad');
+  }
+
+  const inRange = (list, start, end) => list.filter(x => (!start || x.date >= start) && (!end || x.date <= end));
+
+  function previousRange(start, end) {
+    const len = diffDays(start, end) + 1;
+    return { start: addDays(start, -len), end: addDays(start, -1) };
+  }
+
+  // Kemajuan target bagi bulan kalendar yang mengandungi refDate
+  function monthProgress(entries, target, refDate, today) {
+    const [y, m] = refDate.split('-').map(Number);
+    const key = `${y}-${pad(m)}`;
+    const sales = entries.filter(e => e.date.startsWith(key)).reduce((t, e) => t + num(e.sales), 0);
+    const dim = daysInMonth(y, m);
+    const isCurrent = today.startsWith(key);
+    const elapsed = isCurrent ? Number(today.slice(8, 10)) : dim;
+    const remaining = isCurrent ? dim - elapsed : 0;
+    const projected = isCurrent && elapsed > 0 ? sales / elapsed * dim : sales;
+    const gap = Math.max(num(target) - sales, 0);
+    return {
+      year: y, month: m, sales, target: num(target), pct: div(sales, target), isCurrent, daysInMonth: dim,
+      elapsed, remaining, projected, projectedPct: div(projected, target),
+      perDayNeeded: isCurrent && remaining > 0 ? gap / remaining : 0
+    };
+  }
+
+  // Siri graf: harian jika julat <= 62 hari, kalau tidak bulanan
+  function series(entries, start, end) {
+    if (!start || !end || start > end) return [];
+    const daily = diffDays(start, end) <= 62;
+    const map = new Map();
+    if (daily) {
+      for (let d = start; d <= end; d = addDays(d, 1)) map.set(d, { key: d, sales: 0, cost: 0 });
+    } else {
+      const [sy, sm] = start.split('-').map(Number), [ey, em] = end.split('-').map(Number);
+      for (let y = sy, m = sm; y < ey || (y === ey && m <= em); m === 12 ? (y++, m = 1) : m++) {
+        const k = `${y}-${pad(m)}`; map.set(k, { key: k, sales: 0, cost: 0 });
+      }
+    }
+    entries.forEach(e => {
+      const b = map.get(daily ? e.date : e.date.slice(0, 7));
+      if (!b) return;
+      const m = entryMetrics(e);
+      b.sales += m.sales; b.cost += m.adsFee + m.cogs;
+    });
+    return [...map.values()].map(b => ({ ...b, daily }));
+  }
+
+  // ---- CSV ----
+  function parseCSV(text) {
+    text = String(text).replace(/^﻿/, '');
+    const rows = []; let row = [], f = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+      else f += c;
+    }
+    if (f !== '' || row.length) { row.push(f); rows.push(row); }
+    return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+  }
+  function csvToObjects(text) {
+    const r = parseCSV(text);
+    if (r.length < 2) return [];
+    const h = r[0].map(s => s.trim());
+    return r.slice(1).map(row => Object.fromEntries(h.map((k, i) => [k, row[i] == null ? '' : row[i]])));
+  }
+  function toCSV(rows) {
+    const cell = v => {
+      if (v == null) return '';
+      if (typeof v === 'string' && /^[=+\-@\t\r]/.test(v)) v = "'" + v; // elak formula injection di Excel
+      return '"' + String(v).replace(/"/g, '""') + '"';
+    };
+    return rows.map(r => r.map(cell).join(',')).join('\r\n');
+  }
+
+  // ---- Import data lama (P/L Tracker Pro versi Google Sheet) ----
+  const SLOTS = ['P1', 'P2', 'P3', 'P5', 'Extra'];
+  function normDate(s) {
+    s = String(s || '').trim(); let m;
+    if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s))) return { d: `${m[1]}-${pad(m[2])}-${pad(m[3])}`, amb: false };
+    if ((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s))) {
+      const a = +m[1], b = +m[2]; let day, mon, amb = false;
+      if (a > 12) { day = a; mon = b; } else if (b > 12) { mon = a; day = b; } else { day = a; mon = b; amb = a !== b; }
+      return { d: `${m[3]}-${pad(mon)}-${pad(day)}`, amb };
+    }
+    return null;
+  }
+  function importLegacy(tables, uid) {
+    const warnings = []; let ambiguous = 0, skipped = 0, mismatch = 0;
+    const products = new Map();
+    const keyOf = n => String(n).trim().toLowerCase();
+    (tables.Products || []).forEach(r => {
+      const name = String(r.ProductName || '').trim(); if (!name) return;
+      const packages = [];
+      SLOTS.forEach(s => { const nm = String(r['Name_' + s] || '').trim(), c = num(r['COGS_' + s]); if (nm || c) packages.push({ id: s, name: nm || s, cogs: c }); });
+      products.set(keyOf(name), { id: uid(), name, packages });
+    });
+    const prodFor = name => {
+      const k = keyOf(name);
+      if (!products.has(k)) products.set(k, { id: uid(), name: String(name).trim(), packages: [] });
+      return products.get(k);
+    };
+    const itemsFrom = (row, prod) => {
+      const out = [];
+      SLOTS.forEach(s => {
+        const qty = num(row[s + 'Qty']); if (qty <= 0) return;
+        let pk = prod.packages.find(p => p.id === s);
+        if (!pk) { pk = { id: s, name: s, cogs: num(row[s + 'COGS']) }; prod.packages.push(pk); }
+        out.push({ pkgId: s, name: pk.name, qty, cogs: num(row[s + 'COGS']) });
+      });
+      return out;
+    };
+    const dateOf = r => { const nd = normDate(r.Date); if (nd && nd.amb) ambiguous++; return nd ? nd.d : null; };
+
+    const pool = new Map();
+    (tables.GrossProfit || []).forEach(r => {
+      const d = dateOf(r), name = String(r.ProductName || '').trim();
+      if (!d || !name) { skipped++; return; }
+      const k = d + '|' + keyOf(name);
+      if (!pool.has(k)) pool.set(k, []);
+      pool.get(k).push(r);
+    });
+
+    const entries = [];
+    (tables.ProductReport || []).forEach(r => {
+      const d = dateOf(r), name = String(r.ProductName || '').trim();
+      if (!d || !name) { skipped++; return; }
+      const prod = prodFor(name);
+      const gp = (pool.get(d + '|' + keyOf(name)) || []).shift();
+      const fee = r.AdsFeeRate === '' || r.AdsFeeRate == null ? 0.08 : num(r.AdsFeeRate);
+      const e = { id: uid(), date: d, productId: prod.id, productName: prod.name, ads: num(r.AdsSpent), feeRate: fee, sales: num(r.Sales), orders: num(r.Orders), visitors: num(r.Visitor), items: gp ? itemsFrom(gp, prod) : [], remark: String(r.Remark || '') };
+      if (gp && Math.abs(num(gp.Sales) - e.sales) > 0.005) mismatch++;
+      entries.push(e);
+    });
+    pool.forEach(list => list.forEach(gp => {
+      const d = dateOf(gp), prod = prodFor(gp.ProductName);
+      entries.push({ id: uid(), date: normDate(gp.Date).d, productId: prod.id, productName: prod.name, ads: 0, feeRate: 0.08, sales: num(gp.Sales), orders: 0, visitors: 0, items: itemsFrom(gp, prod), remark: String(gp.Remark || '') });
+    }));
+
+    const returns = [];
+    (tables.ProductReturn || []).forEach(r => {
+      const d = dateOf(r), name = String(r.ProductName || '').trim();
+      if (!d || !name) { skipped++; return; }
+      const prod = prodFor(name);
+      returns.push({ id: uid(), date: d, productId: prod.id, productName: prod.name, items: itemsFrom(r, prod), shipping: 0, remark: String(r.Remark || '') });
+    });
+
+    if (ambiguous) warnings.push(`${ambiguous} tarikh berformat x/y/tahun tidak jelas (hari/bulan), dianggap hari/bulan/tahun. Semak rekod anda.`);
+    if (mismatch) warnings.push(`${mismatch} rekod ada Sales berbeza antara Product Report dan Gross Profit. Sales dari Product Report digunakan.`);
+    if (skipped) warnings.push(`${skipped} baris dilangkau (tarikh atau produk tiada).`);
+    return { products: [...products.values()], entries, returns, warnings };
+  }
+
+  return { num, div, fmtDate, parseDate, addDays, diffDays, daysInMonth, entryMetrics, returnMetrics, summarize, pctChange, breakEvenRoas, roasLevel, inRange, previousRange, monthProgress, series, parseCSV, csvToObjects, toCSV, importLegacy, normDate };
+})();
+/*ENGINE-END*/
+
+/* ================= APP ================= */
+const BRAND = 'Hadiah percuma untuk pembeli Pejuang SGD · dibina oleh @syafiqzulhairy';
+const KEY = 'pnlfree.v1';
+const MONTHS = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const N = Engine.num;
+const today = () => Engine.fmtDate(new Date());
+
+let storageOK = true;
+const blank = () => ({ v: 1, settings: { adsFeeRate: 0.08, currency: 'RM', monthlyTarget: 100000, lastBackup: null }, products: [], entries: [], returns: [] });
+function migrate(d) {
+  const b = blank();
+  return { v: 1, settings: { ...b.settings, ...(d.settings || {}) }, products: Array.isArray(d.products) ? d.products : [], entries: Array.isArray(d.entries) ? d.entries : [], returns: Array.isArray(d.returns) ? d.returns : [] };
+}
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) return migrate(JSON.parse(raw)); } catch (e) { storageOK = false; }
+  return blank();
+}
+let db = load();
+let warnedSave = false;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch (e) { storageOK = false; if (!warnedSave) { warnedSave = true; toast('Browser tak benarkan simpan data. Muat turun backup selalu.', true); } }
+}
+
+const ui = {
+  view: 'dashboard',
+  dash: { start: Engine.fmtDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), end: today(), product: '' },
+  rec: { start: '', end: '', product: '', tab: 'ads' },
+  ret: { start: '', end: '', product: '' },
+  bannerOff: false
+};
+
+/* ---------- format ---------- */
+const cur = () => db.settings.currency || 'RM';
+const money = v => { v = N(v); return (v < 0 ? '-' : '') + cur() + ' ' + Math.abs(v).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+const qty = v => N(v).toLocaleString('en-MY', { maximumFractionDigits: 2 });
+const pct = v => (N(v) * 100).toFixed(2) + '%';
+const xf = v => N(v).toFixed(2) + 'x';
+const pname = (id, fb) => (db.products.find(p => p.id === id) || {}).name || fb || '(produk dipadam)';
+const prodOf = id => db.products.find(p => p.id === id);
+const sign = v => (N(v) < 0 ? 'neg' : 'pos');
+const dmy = s => s.split('-').reverse().join('/');
+
+function toast(msg, err) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'toast' + (err ? ' err' : '');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add('hidden'), 3200);
+}
+
+/* ---------- ikon ---------- */
+const IC = {
+  dash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  rec: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
+  ret: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>',
+  prod: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+  set: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
+  del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>'
+};
+const MENUS = [
+  { id: 'dashboard', label: 'Dashboard', ic: IC.dash },
+  { id: 'records', label: 'Rekod', ic: IC.rec },
+  { id: 'returns', label: 'RTS', ic: IC.ret, cls: 'rts' },
+  { id: 'products', label: 'Produk', ic: IC.prod },
+  { id: 'settings', label: 'Tetapan', ic: IC.set }
+];
+const MENU_LONG = { records: 'Rekod Harian', returns: 'Return / RTS', settings: 'Tetapan & Data' };
+
+/* ---------- dialog helpers ---------- */
+function ask({ title, text = '', ok = 'OK', danger = false, field = null }) {
+  return new Promise(res => {
+    const d = $('#dlgAsk');
+    $('#ask-title').textContent = title; $('#ask-text').textContent = text;
+    const f = $('#ask-field'); f.classList.toggle('hidden', !field);
+    if (field) { $('#ask-label').textContent = field.label; $('#ask-input').value = field.value == null ? '' : field.value; }
+    const b = $('#ask-ok'); b.textContent = ok; b.className = 'btn ' + (danger ? 'danger' : 'primary');
+    d._res = res; d._val = null;
+    d.showModal();
+    if (field) setTimeout(() => $('#ask-input').select(), 30);
+  });
+}
+$('#fAsk').addEventListener('submit', e => {
+  e.preventDefault();
+  const d = $('#dlgAsk'); d._val = $('#ask-field').classList.contains('hidden') ? true : $('#ask-input').value; d.close('ok');
+});
+$('#dlgAsk').addEventListener('close', () => { const d = $('#dlgAsk'); if (d._res) { const r = d._res; d._res = null; r(d.returnValue === 'ok' ? d._val : null); } d.returnValue = ''; });
+$$('dialog').forEach(d => d.addEventListener('click', e => { if (e.target.closest('[data-close]')) d.close('cancel'); }));
+
+/* ---------- navigasi ---------- */
+function renderNav() {
+  const mk = long => MENUS.map(m => `<button class="nav-btn ${m.cls || ''} ${ui.view === m.id ? 'on' : ''}" data-act="nav" data-v="${m.id}">${m.ic}<span>${esc(long ? (MENU_LONG[m.id] || m.label) : m.label)}</span></button>`).join('');
+  $('#sideNav').innerHTML = `<div class="logo"><img src="icon.svg" alt="" width="34" height="34"><span>P/L Tracker <b>Free</b></span></div>` + mk(true) + `<div class="foot">${esc(BRAND)}</div>`;
+  $('#botNav').innerHTML = mk(false);
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + ui.view));
+}
+function nav(v) { ui.view = v; renderNav(); window.scrollTo(0, 0); }
+
+function renderBanner() {
+  const el = $('#banner'); const s = db.settings;
+  const total = db.entries.length + db.returns.length;
+  const old = s.lastBackup ? Engine.diffDays(s.lastBackup, today()) : null;
+  let msg = '';
+  if (total >= 10 && old === null) msg = 'Anda belum pernah backup. Data anda hanya ada dalam browser ini.';
+  else if (old !== null && old >= 14 && total > 0) msg = `Backup terakhir ${old} hari lepas.`;
+  if (!msg || ui.bannerOff) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="banner"><span>${esc(msg)}</span><span><button class="btn sm primary" data-act="backup">Muat turun backup</button> <button class="btn sm ghost" data-act="dismissBanner">Kemudian</button></span></div>`;
+}
+
+/* ---------- penapis ---------- */
+function populateFilters() {
+  const opts = '<option value="">Semua produk</option>' + db.products.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  [['#dash-prod', ui.dash], ['#rec-prod', ui.rec], ['#ret-prod', ui.ret]].forEach(([sel, st]) => {
+    const el = $(sel); el.innerHTML = opts;
+    if (st.product && !prodOf(st.product)) st.product = '';
+    el.value = st.product;
+  });
+  $('#dash-start').value = ui.dash.start; $('#dash-end').value = ui.dash.end;
+  $('#rec-start').value = ui.rec.start; $('#rec-end').value = ui.rec.end;
+  $('#ret-start').value = ui.ret.start; $('#ret-end').value = ui.ret.end;
+  $$('#rtabs button').forEach(b => b.classList.toggle('on', b.dataset.t === ui.rec.tab));
+  $$('.cur').forEach(el => el.textContent = cur());
+}
+
+/* ---------- carta SVG ---------- */
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+function axisFmt(v) { return v >= 1000 ? (v / 1000 % 1 ? (v / 1000).toFixed(1) : v / 1000) + 'k' : String(Math.round(v)); }
+function bucketLabel(b) {
+  if (b.daily) { const [, m, d] = b.key.split('-'); return `${d}/${m}`; }
+  const [y, m] = b.key.split('-'); return `${MONTHS[+m - 1].slice(0, 3)} ${y.slice(2)}`;
+}
+function drawChart(el, data) {
+  if (!data.length || data.every(s => !s.sales && !s.cost)) { el.innerHTML = '<div class="empty">Tiada data untuk tarikh dipilih.</div>'; return; }
+  const W = 800, H = 300, L = 52, R = 14, T = 12, B = 28, iw = W - L - R, ih = H - T - B, n = data.length;
+  const max = Math.max(...data.flatMap(s => [s.sales, s.cost]), 1);
+  const step = niceStep(max / 4), top = step * Math.ceil(max / step);
+  const x = i => L + (n === 1 ? iw / 2 : i * iw / (n - 1));
+  const y = v => T + ih - (v / top) * ih;
+  const path = k => data.map((s, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(s[k]).toFixed(1)}`).join('');
+  const area = k => path(k) + `L${x(n - 1).toFixed(1)},${T + ih}L${x(0).toFixed(1)},${T + ih}Z`;
+  let grid = '';
+  for (let v = 0; v <= top + 1e-9; v += step) grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e2e8f0"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#64748b">${axisFmt(v)}</text>`;
+  const every = Math.ceil(n / 8); let xl = '';
+  data.forEach((s, i) => { if (i % every === 0) xl += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#64748b">${bucketLabel(s)}</text>`; });
+  const dots = n <= 45 ? data.map((s, i) => `<circle cx="${x(i)}" cy="${y(s.sales)}" r="3" fill="#10b981"/><circle cx="${x(i)}" cy="${y(s.cost)}" r="3" fill="#f43f5e"/>`).join('') : '';
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Graf Sales berbanding Kos">${grid}${xl}
+    <path d="${area('sales')}" fill="#10b98122"/><path d="${area('cost')}" fill="#f43f5e22"/>
+    <path d="${path('sales')}" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="${path('cost')}" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linejoin="round"/>${dots}
+    <line id="guide" y1="${T}" y2="${T + ih}" stroke="#94a3b8" stroke-dasharray="4 3" style="display:none"/></svg><div class="tip"></div>`;
+  const svg = $('svg', el), tip = $('.tip', el), guide = $('#guide', el);
+  const move = ev => {
+    const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) / r.width * W;
+    let idx = 0, best = 1e9; data.forEach((_, i) => { const d = Math.abs(x(i) - px); if (d < best) { best = d; idx = i; } });
+    const s = data[idx];
+    guide.setAttribute('x1', x(idx)); guide.setAttribute('x2', x(idx)); guide.style.display = '';
+    tip.innerHTML = `<b>${bucketLabel(s)}</b><br>Sales: ${money(s.sales)}<br>Kos (Ads+COGS): ${money(s.cost)}`;
+    tip.style.display = 'block'; tip.style.left = Math.min(Math.max(x(idx) / W * r.width, 70), r.width - 70) + 'px';
+  };
+  svg.addEventListener('pointermove', move); svg.addEventListener('pointerdown', move);
+  svg.addEventListener('pointerleave', () => { tip.style.display = 'none'; guide.style.display = 'none'; });
+}
+
+/* ---------- dashboard ---------- */
+function chip(c, p, invert) {
+  const d = Engine.pctChange(c, p); if (d === null) return '';
+  const up = d >= 0, good = invert ? !up : up;
+  return `<span class="chip ${good ? 'good' : 'bad'}">${up ? '▲' : '▼'} ${Math.abs(d * 100).toFixed(0)}%</span>`;
+}
+function roasBadge(roas, adsFee, be) {
+  if (!adsFee) return '<span class="badge b-na">-</span>';
+  return `<span class="badge b-${Engine.roasLevel(roas, be)}">${xf(roas)}</span>`;
+}
+function renderDashboard() {
+  const body = $('#dashBody');
+  if (!db.products.length && !db.entries.length) {
+    body.innerHTML = `<div class="card start"><h3>Selamat datang 👋</h3><p class="mute" style="margin-top:6px">Jejak untung rugi bisnes anda dalam tiga langkah.</p>
+      <ol><li>Tambah produk dan kos (COGS) setiap pakej.</li><li>Isi rekod harian: ads, sales, order dan pakej terjual.</li><li>Lihat untung bersih, ROAS dan kadar RTS di sini.</li></ol>
+      <div class="acts"><button class="btn primary" data-act="newProduct">+ Tambah produk pertama</button><button class="btn" data-act="sample">Cuba dengan data contoh</button></div>
+      <p class="help" style="margin-top:14px">Data disimpan dalam browser ini sahaja. Ingat buat backup di menu Tetapan.</p></div>`;
+    return;
+  }
+  const { start, end, product } = ui.dash;
+  const pf = x => !product || x.productId === product;
+  const E = Engine.inRange(db.entries, start, end).filter(pf), Rt = Engine.inRange(db.returns, start, end).filter(pf);
+  const c = Engine.summarize(E, Rt);
+  const valid = start && end && start <= end;
+  const pr = valid ? Engine.previousRange(start, end) : { start: '', end: '' };
+  const p = Engine.summarize(Engine.inRange(db.entries, pr.start, pr.end).filter(pf), Engine.inRange(db.returns, pr.start, pr.end).filter(pf));
+  const be = Engine.breakEvenRoas(E);
+  const mp = Engine.monthProgress(db.entries, db.settings.monthlyTarget, end || today(), today());
+  const pctShown = Math.min(mp.pct * 100, 100);
+
+  let tgt = `<div class="card"><div class="row"><h3>Target sales bulanan <span class="mute" style="font-weight:500">· ${MONTHS[mp.month - 1]} ${mp.year} · semua produk</span></h3>
+    <button class="btn sm" data-act="editTarget">Edit target</button></div>
+    <div class="row" style="margin-top:12px"><span class="mute">Sales dicapai: <b style="color:var(--text);font-size:16px">${money(mp.sales)}</b></span><span class="mute">Target: <b style="color:var(--blue);font-size:16px">${money(mp.target)}</b></span></div>
+    <div class="bar"><i class="${mp.pct >= 1 ? 'done' : ''}" style="width:${pctShown.toFixed(1)}%"></i></div>
+    <div class="row"><span class="mute" style="font-size:12.5px">`;
+  if (mp.isCurrent) {
+    tgt += `Hari ${mp.elapsed} daripada ${mp.daysInMonth}. Jangkaan hujung bulan: <b>${money(mp.projected)}</b> (${(mp.projectedPct * 100).toFixed(0)}% target)` +
+      (mp.pct < 1 && mp.remaining > 0 ? `. Perlu <b>${money(mp.perDayNeeded)}</b> sehari untuk ${mp.remaining} hari lagi.` : '.');
+  } else tgt += 'Bulan ini sudah lepas.';
+  tgt += `</span><b style="color:${mp.pct >= 1 ? 'var(--green)' : 'var(--blue)'}">${(mp.pct * 100).toFixed(1)}% tercapai</b></div></div>`;
+
+  const kpis = `<div class="grid kpis" style="margin-top:18px">
+    <div class="kpi orange"><div class="lbl"><span>Gross Sales</span>${chip(c.sales, p.sales)}</div><div class="val">${money(c.sales)}</div></div>
+    <div class="kpi green"><div class="lbl"><span>Order</span>${chip(c.orders, p.orders)}</div><div class="val">${qty(c.orders)}</div></div>
+    <div class="kpi rose"><div class="lbl"><span>Ads + COGS</span>${chip(c.adsFee + c.cogs, p.adsFee + p.cogs, true)}</div><div class="val">${money(c.adsFee + c.cogs)}</div><div class="note">Ads (+fee): ${money(c.adsFee)}<br>COGS: ${money(c.cogs)}</div></div>
+    <div class="kpi red"><div class="lbl"><span>RTS Loss</span><span class="chip bad">${pct(c.returnRate)} kadar</span></div><div class="val">${money(c.retLoss)}</div><div class="note">COGS hangus: ${money(c.retCogs)}<br>Pos: ${money(c.retShipping)}</div></div>
+    <div class="kpi blue"><div class="lbl"><span>Net Profit</span>${chip(c.netProfit, p.netProfit)}</div><div class="val ${c.netProfit < 0 ? 'neg' : ''}">${money(c.netProfit)}</div><div class="note">Margin bersih: ${pct(c.netMargin)}</div></div></div>
+    <p class="help" style="margin:8px 2px 0">Net Profit = Sales − COGS − Ads (+fee) − Kerugian RTS. Anak panah dibandingkan dengan ${valid ? `${dmy(pr.start)} hingga ${dmy(pr.end)}` : 'tempoh sebelum'}.</p>`;
+
+  const stats = `<div class="grid stats" style="margin-top:18px">
+    <div class="mini"><div class="lbl">ROAS (termasuk fee)</div><div class="val">${c.adsFee ? xf(c.roas) : '-'}</div><div class="note">${be ? `Pulang modal di ${xf(be)}` : 'Belum cukup data'}</div></div>
+    <div class="mini"><div class="lbl">AOV (purata order)</div><div class="val">${money(c.aov)}</div></div>
+    <div class="mini"><div class="lbl">CPP (kos per order)</div><div class="val">${money(c.cpp)}</div></div>
+    <div class="mini"><div class="lbl">Kadar tukar (CR)</div><div class="val">${pct(c.cr)}</div><div class="note">${c.retQty ? `Anggaran ads terbazir pada RTS: ${money(c.adsWasted)}` : 'Order ÷ visitor'}</div></div></div>`;
+
+  // jadual produk
+  const groups = new Map();
+  E.forEach(e => { if (!groups.has(e.productId)) groups.set(e.productId, { e: [], r: [] }); groups.get(e.productId).e.push(e); });
+  Rt.forEach(r => { if (!groups.has(r.productId)) groups.set(r.productId, { e: [], r: [] }); groups.get(r.productId).r.push(r); });
+  const rows = [...groups.entries()].map(([id, g]) => {
+    const s = Engine.summarize(g.e, g.r);
+    return { id, name: pname(id, (g.e[0] || g.r[0]).productName), s, be: Engine.breakEvenRoas(g.e) };
+  }).sort((a, b) => b.s.netProfit - a.s.netProfit);
+  const tbl = rows.length ? `<div class="tbl"><table><thead><tr><th>Produk</th><th class="r">Unit</th><th class="r">Sales</th><th class="r">Ads+fee</th><th class="r">ROAS</th><th class="r">Net Profit</th><th class="r">Margin</th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="r">${qty(r.s.qty)}</td><td class="r">${money(r.s.sales)}</td><td class="r">${money(r.s.adsFee)}</td><td class="r">${roasBadge(r.s.roas, r.s.adsFee, r.be)}</td><td class="r ${sign(r.s.netProfit)}"><b>${money(r.s.netProfit)}</b></td><td class="r">${pct(r.s.netMargin)}</td></tr>`).join('') +
+    '</tbody></table></div>' : '<div class="empty">Tiada data untuk tarikh dipilih.</div>';
+
+  body.innerHTML = tgt + kpis + stats +
+    `<div class="card"><div class="row"><h3>Sales vs Kos</h3><div class="legend"><span><i style="background:#10b981"></i>Sales</span><span><i style="background:#f43f5e"></i>Ads + COGS</span></div></div><div class="chart" id="chart"></div></div>` +
+    `<div class="card"><h3>Prestasi produk</h3><p class="sub">Disusun ikut net profit tertinggi.</p><div style="margin-top:12px">${tbl}</div></div>`;
+  drawChart($('#chart'), Engine.series(E, start, end));
+}
+
+/* ---------- rekod harian ---------- */
+function recFiltered() {
+  const { start, end, product } = ui.rec;
+  return Engine.inRange(db.entries, start, end).filter(e => !product || e.productId === product).sort((a, b) => b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id)));
+}
+function actions(editAct, delAct, id) {
+  return `<td class="c no-print"><button class="icon-btn" data-act="${editAct}" data-id="${esc(id)}" title="Edit" aria-label="Edit">${IC.edit}</button><button class="icon-btn del" data-act="${delAct}" data-id="${esc(id)}" title="Padam" aria-label="Padam">${IC.del}</button></td>`;
+}
+function renderRecords() {
+  const list = recFiltered(), el = $('#recBody');
+  if (!list.length) { el.innerHTML = `<div class="empty">${db.entries.length ? 'Tiada rekod dalam tapisan ini.' : 'Belum ada rekod. Tekan “+ Rekod baru” untuk mula.'}</div>`; return; }
+  const bes = {}; db.products.forEach(p => { bes[p.id] = Engine.breakEvenRoas(db.entries.filter(e => e.productId === p.id)); });
+  const T = Engine.summarize(list, []);
+  let head, rows, foot;
+  if (ui.rec.tab === 'ads') {
+    head = '<th>Tarikh</th><th>Produk</th><th class="r">Ads+fee</th><th class="r">Sales</th><th class="r">Order</th><th class="r">ROAS</th><th class="r">CPP</th><th class="r">CPLV</th><th class="r">CR</th>';
+    rows = list.map(e => { const m = Engine.entryMetrics(e); return `<tr><td>${dmy(e.date)}</td><td><b>${esc(pname(e.productId, e.productName))}</b>${e.remark ? `<div class="mute" style="font-size:11.5px;max-width:180px;overflow:hidden;text-overflow:ellipsis">${esc(e.remark)}</div>` : ''}</td><td class="r neg">${money(m.adsFee)}</td><td class="r pos"><b>${money(m.sales)}</b></td><td class="r">${qty(m.orders)}</td><td class="r">${roasBadge(m.roas, m.adsFee, bes[e.productId])}</td><td class="r">${money(m.cpp)}</td><td class="r">${money(m.cplv)}</td><td class="r">${pct(m.cr)}</td>${actions('editEntry', 'delEntry', e.id)}</tr>`; }).join('');
+    foot = `<td colspan="2">Jumlah (${list.length} rekod)</td><td class="r">${money(T.adsFee)}</td><td class="r">${money(T.sales)}</td><td class="r">${qty(T.orders)}</td><td class="r">${T.adsFee ? xf(T.roas) : '-'}</td><td class="r">${money(T.cpp)}</td><td class="r">${money(T.cplv)}</td><td class="r">${pct(T.cr)}</td><td class="no-print"></td>`;
+  } else {
+    head = '<th>Tarikh</th><th>Produk</th><th class="r">Sales</th><th class="r">Unit</th><th class="r">COGS</th><th class="r">Untung kasar</th><th class="r">Margin</th><th class="r">Ads+fee</th><th class="r">Lepas ads</th>';
+    rows = list.map(e => { const m = Engine.entryMetrics(e); return `<tr><td>${dmy(e.date)}</td><td><b>${esc(pname(e.productId, e.productName))}</b></td><td class="r">${money(m.sales)}</td><td class="r">${qty(m.qty)}</td><td class="r neg">- ${money(m.cogs)}</td><td class="r"><b>${money(m.gp)}</b></td><td class="r ${m.gpMargin > .4 ? 'pos' : m.gpMargin > .2 ? '' : 'neg'}"><b>${pct(m.gpMargin)}</b></td><td class="r neg">- ${money(m.adsFee)}</td><td class="r ${sign(m.net)}"><b>${money(m.net)}</b></td>${actions('editEntry', 'delEntry', e.id)}</tr>`; }).join('');
+    foot = `<td colspan="2">Jumlah (${list.length} rekod)</td><td class="r">${money(T.sales)}</td><td class="r">${qty(T.qty)}</td><td class="r">${money(T.cogs)}</td><td class="r">${money(T.gp)}</td><td class="r">${pct(T.gpMargin)}</td><td class="r">${money(T.adsFee)}</td><td class="r">${money(T.gp - T.adsFee)}</td><td class="no-print"></td>`;
+  }
+  el.innerHTML = `<div class="tbl"><table><thead><tr>${head}<th class="no-print"></th></tr></thead><tbody>${rows}</tbody><tfoot><tr>${foot}</tr></tfoot></table></div>` +
+    (ui.rec.tab === 'gp' ? '<p class="help" style="padding-top:14px">“Lepas ads” belum campur kerugian RTS. Lihat jumlah penuh di Dashboard.</p>' : '');
+}
+
+/* ---------- return ---------- */
+function renderReturns() {
+  const { start, end, product } = ui.ret, el = $('#retBody');
+  const list = Engine.inRange(db.returns, start, end).filter(r => !product || r.productId === product).sort((a, b) => b.date.localeCompare(a.date));
+  if (!list.length) { el.innerHTML = `<div class="empty">${db.returns.length ? 'Tiada rekod dalam tapisan ini.' : 'Tiada rekod return setakat ini. Bagus!'}</div>`; return; }
+  const T = Engine.summarize([], list);
+  el.innerHTML = `<div class="tbl"><table><thead><tr><th>Tarikh</th><th>Produk</th><th class="c">Unit</th><th class="r">COGS hangus</th><th class="r">Pos hangus</th><th class="r">Jumlah rugi</th><th class="no-print"></th></tr></thead><tbody>` +
+    list.map(r => { const m = Engine.returnMetrics(r); return `<tr><td>${dmy(r.date)}</td><td><b>${esc(pname(r.productId, r.productName))}</b>${r.remark ? `<div class="mute" style="font-size:11.5px;max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(r.remark)}</div>` : ''}</td><td class="c"><b>${qty(m.qty)}</b></td><td class="r neg">${money(m.cogs)}</td><td class="r neg">${money(m.shipping)}</td><td class="r neg"><b>${money(m.loss)}</b></td>${actions('editReturn', 'delReturn', r.id)}</tr>`; }).join('') +
+    `</tbody><tfoot><tr><td colspan="2">Jumlah</td><td class="c">${qty(T.retQty)}</td><td class="r">${money(T.retCogs)}</td><td class="r">${money(T.retShipping)}</td><td class="r">${money(T.retLoss)}</td><td class="no-print"></td></tr></tfoot></table></div>`;
+}
+
+/* ---------- produk ---------- */
+function renderProducts() {
+  const el = $('#prodBody');
+  if (!db.products.length) { el.innerHTML = '<div class="card"><div class="empty">Belum ada produk. Tekan “+ Produk baru”.</div></div>'; return; }
+  el.innerHTML = '<div class="prods">' + db.products.map(p => {
+    const E = db.entries.filter(e => e.productId === p.id), be = Engine.breakEvenRoas(E);
+    return `<div class="card prod" style="margin:0"><div class="row"><h3>${esc(p.name)}</h3><span class="no-print"><button class="icon-btn" data-act="editProduct" data-id="${esc(p.id)}" title="Edit" aria-label="Edit">${IC.edit}</button><button class="icon-btn del" data-act="delProduct" data-id="${esc(p.id)}" title="Padam" aria-label="Padam">${IC.del}</button></span></div>
+      <div class="pk">${p.packages.map(k => `<span>${esc(k.name)} · ${money(k.cogs)}</span>`).join('') || '<span>Tiada pakej</span>'}</div>
+      <div class="sub">${E.length} rekod · ROAS pulang modal: <b>${be ? xf(be) : 'belum cukup data'}</b></div></div>`;
+  }).join('') + '</div>';
+}
+
+/* ---------- tetapan ---------- */
+function renderSettings() {
+  const s = db.settings;
+  $('#setBody').innerHTML = `<div class="set-grid">
+    <div class="card"><h3>Umum</h3>
+      <form id="fSettings" style="display:grid;gap:12px;margin-top:12px">
+        <div class="fld"><label for="s-cur">Simbol mata wang</label><input id="s-cur" maxlength="5" value="${esc(s.currency)}" required></div>
+        <div class="fld"><label for="s-fee">Fee / cukai atas ads (%)</label><input id="s-fee" type="number" min="0" max="100" step="0.01" value="${(N(s.adsFeeRate) * 100).toFixed(2).replace(/\.?0+$/, '')}" required><div class="hint">Ads+fee = Ads × (1 + fee). Kadar ini disimpan pada setiap rekod baru. Rekod lama tak berubah.</div></div>
+        <div class="fld"><label for="s-target">Target sales bulanan</label><input id="s-target" type="number" min="1" step="0.01" value="${N(s.monthlyTarget)}" required></div>
+        <div><button class="btn primary" type="submit">Simpan tetapan</button></div></form></div>
+    <div class="card"><h3>Backup &amp; pulihkan</h3><p class="sub">Data anda hanya ada dalam browser ini. Muat turun backup secara berkala dan sebelum tukar komputer atau bersihkan browser.</p>
+      <div class="acts-row"><button class="btn primary" data-act="backup">Muat turun backup (.json)</button><label class="btn" style="cursor:pointer">Pulihkan dari backup<input type="file" accept=".json,application/json" id="fRestore" hidden></label></div>
+      <p class="help">${s.lastBackup ? 'Backup terakhir: ' + dmy(s.lastBackup) : 'Belum pernah backup.'}</p></div>
+    <div class="card"><h3>Eksport ke Excel (CSV)</h3><p class="sub">Buka dalam Excel atau Google Sheets.</p>
+      <div class="acts-row"><button class="btn" data-act="exportEntries">Rekod harian</button><button class="btn" data-act="exportReturns">Return / RTS</button></div></div>
+    <div class="card"><h3>Import dari P/L Tracker Pro (Google Sheet)</h3><p class="sub">Dari Google Sheet lama: File → Download → CSV, bagi tab Products, ProductReport, GrossProfit dan ProductReturn. Pilih semua fail CSV sekali gus.</p>
+      <div class="acts-row"><label class="btn" style="cursor:pointer">Pilih fail CSV<input type="file" accept=".csv,text/csv" multiple id="fLegacy" hidden></label></div>
+      <p class="help">Data ditambah pada data sedia ada. Ads loss RTS lama tidak dibawa kerana ads kini ditolak sepenuhnya dalam Net Profit.</p></div>
+    <div class="card"><h3>Padam semua data</h3><p class="sub">Tindakan ini tak boleh diundur. Buat backup dahulu.</p>
+      <div class="acts-row"><button class="btn danger" data-act="wipe">Padam semua data</button></div></div></div>
+    <p class="help" style="margin-top:18px">${esc(BRAND)}${storageOK ? '' : ' · Penyimpanan browser tidak tersedia, data hilang bila tutup.'}</p>`;
+  $('#fSettings').addEventListener('submit', e => {
+    e.preventDefault();
+    const fee = N($('#s-fee').value) / 100, tg = N($('#s-target').value), c = $('#s-cur').value.trim();
+    if (!c || fee < 0 || fee > 1 || tg <= 0) return toast('Semak nilai tetapan.', true);
+    db.settings.currency = c; db.settings.adsFeeRate = fee; db.settings.monthlyTarget = tg; save(); render(); toast('Tetapan disimpan.');
+  });
+  $('#fRestore').addEventListener('change', restoreBackup);
+  $('#fLegacy').addEventListener('change', importLegacyFiles);
+}
+
+function render() { renderNav(); renderBanner(); populateFilters(); renderDashboard(); renderRecords(); renderReturns(); renderProducts(); renderSettings(); }
+
+/* ---------- borang rekod harian ---------- */
+function formRows(product, items) {
+  items = items || [];
+  const rows = ((product && product.packages) || []).map(p => { const it = items.find(i => i.pkgId === p.id); return { pkgId: p.id, name: p.name, label: p.name, qty: it ? it.qty : '', cogs: it ? it.cogs : p.cogs }; });
+  items.forEach(it => { if (!rows.some(r => r.pkgId === it.pkgId)) rows.push({ pkgId: it.pkgId, name: it.name, label: it.name + ' (lama)', qty: it.qty, cogs: it.cogs }); });
+  return rows;
+}
+const rowsToItems = rows => rows.filter(r => N(r.qty) > 0).map(r => ({ pkgId: r.pkgId, name: r.name, qty: N(r.qty), cogs: N(r.cogs) }));
+function pkgHtml(rows) {
+  if (!rows.length) return '<p class="help">Pilih produk yang ada pakej. Pakej ditambah di menu Produk.</p>';
+  return rows.map((r, i) => `<div class="pkrow"><div class="nm">${esc(r.label)}</div><div class="pk-in"><label>Qty</label><input type="number" min="0" step="1" inputmode="numeric" data-i="${i}" data-f="qty" value="${esc(r.qty)}"></div><div class="pk-in"><label>COGS (${esc(cur())})</label><input type="number" min="0" step="0.01" inputmode="decimal" data-i="${i}" data-f="cogs" value="${esc(r.cogs)}"></div></div>`).join('');
+}
+function bindRows(container, rows, after) {
+  container.oninput = ev => { const t = ev.target; if (t.dataset.i == null) return; rows[+t.dataset.i][t.dataset.f] = t.value; after(); };
+}
+function prodOptions(selected) {
+  return '<option value="">Pilih produk…</option>' + db.products.map(p => `<option value="${esc(p.id)}" ${p.id === selected ? 'selected' : ''}>${esc(p.name)}</option>`).join('');
+}
+
+let entryRows = [], entryEditing = null;
+function entryFromForm() {
+  return { ads: $('#e-ads').value, sales: $('#e-sales').value, orders: $('#e-orders').value, visitors: $('#e-visitors').value, feeRate: entryEditing ? entryEditing.feeRate : db.settings.adsFeeRate, items: rowsToItems(entryRows) };
+}
+function entryPreview() {
+  const m = Engine.entryMetrics(entryFromForm());
+  const be = Engine.breakEvenRoas(db.entries.filter(e => e.productId === $('#e-prod').value));
+  $('#e-preview').innerHTML = `<div>Ads + fee<br><b>${money(m.adsFee)}</b></div><div>ROAS<br><b>${m.adsFee ? xf(m.roas) : '-'}</b>${be ? ` <span class="mute">(pulang modal ${xf(be)})</span>` : ''}</div>
+    <div>Unit / COGS<br><b>${qty(m.qty)} / ${money(m.cogs)}</b></div><div>Untung kasar (margin)<br><b class="${sign(m.gp)}">${money(m.gp)} (${pct(m.gpMargin)})</b></div>
+    <div style="grid-column:span 2">Untung lepas ads<br><b class="${sign(m.net)}" style="font-size:16px">${money(m.net)}</b></div>`;
+}
+function openEntry(id) {
+  if (!db.products.length) { toast('Tambah produk dahulu.', true); openProduct(); return; }
+  entryEditing = id ? db.entries.find(e => e.id === id) : null;
+  const e = entryEditing;
+  $('#entryTitle').textContent = e ? 'Edit rekod harian' : 'Rekod harian baru';
+  $('#e-date').value = e ? e.date : today();
+  $('#e-prod').innerHTML = prodOptions(e ? e.productId : (ui.rec.product || (db.products.length === 1 ? db.products[0].id : '')));
+  $('#e-ads').value = e ? e.ads : ''; $('#e-sales').value = e ? e.sales : '';
+  $('#e-orders').value = e ? e.orders : ''; $('#e-visitors').value = e ? e.visitors : '';
+  $('#e-remark').value = e ? (e.remark || '') : '';
+  $('#e-fee').textContent = `Fee ${(N(e ? e.feeRate : db.settings.adsFeeRate) * 100).toFixed(2).replace(/\.?0+$/, '')}% ditambah automatik.`;
+  entryRows = formRows(prodOf($('#e-prod').value), e ? e.items : []);
+  $('#e-pkgs').innerHTML = pkgHtml(entryRows); bindRows($('#e-pkgs'), entryRows, entryPreview);
+  entryPreview(); $('#dlgEntry').showModal();
+}
+$('#e-prod').addEventListener('change', () => {
+  entryRows = formRows(prodOf($('#e-prod').value), []);
+  $('#e-pkgs').innerHTML = pkgHtml(entryRows); bindRows($('#e-pkgs'), entryRows, entryPreview); entryPreview();
+});
+['#e-ads', '#e-sales', '#e-orders', '#e-visitors'].forEach(s => $(s).addEventListener('input', entryPreview));
+$('#fEntry').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const productId = $('#e-prod').value, date = $('#e-date').value;
+  if (!productId || !date) return toast('Pilih tarikh dan produk.', true);
+  if (!entryEditing && db.entries.some(e => e.productId === productId && e.date === date)) {
+    const ok = await ask({ title: 'Rekod sudah ada', text: `Sudah ada rekod untuk produk ini pada ${dmy(date)}. Tambah satu lagi?`, ok: 'Ya, tambah' });
+    if (!ok) return;
+  }
+  const f = entryFromForm();
+  const rec = { id: entryEditing ? entryEditing.id : uid(), date, productId, productName: pname(productId), ads: N(f.ads), feeRate: N(f.feeRate), sales: N(f.sales), orders: N(f.orders), visitors: N(f.visitors), items: f.items, remark: $('#e-remark').value.trim() };
+  if (entryEditing) db.entries[db.entries.findIndex(e => e.id === entryEditing.id)] = rec; else db.entries.push(rec);
+  save(); $('#dlgEntry').close(); render(); toast('Rekod disimpan.');
+});
+
+/* ---------- borang return ---------- */
+let retRows = [], retEditing = null;
+function retPreview() {
+  const m = Engine.returnMetrics({ items: rowsToItems(retRows), shipping: $('#r-ship').value });
+  $('#r-preview').innerHTML = `<div>Unit pulang<br><b>${qty(m.qty)}</b></div><div>COGS hangus<br><b>${money(m.cogs)}</b></div><div>Pos hangus<br><b>${money(m.shipping)}</b></div><div>Jumlah rugi<br><b class="neg" style="font-size:16px">${money(m.loss)}</b></div>`;
+}
+function openReturn(id) {
+  if (!db.products.length) { toast('Tambah produk dahulu.', true); openProduct(); return; }
+  retEditing = id ? db.returns.find(r => r.id === id) : null;
+  const r = retEditing;
+  $('#retTitle').textContent = r ? 'Edit rekod return' : 'Rekod return baru';
+  $('#r-date').value = r ? r.date : today();
+  $('#r-prod').innerHTML = prodOptions(r ? r.productId : (ui.ret.product || (db.products.length === 1 ? db.products[0].id : '')));
+  $('#r-ship').value = r ? r.shipping : ''; $('#r-remark').value = r ? (r.remark || '') : '';
+  retRows = formRows(prodOf($('#r-prod').value), r ? r.items : []);
+  $('#r-pkgs').innerHTML = pkgHtml(retRows); bindRows($('#r-pkgs'), retRows, retPreview);
+  retPreview(); $('#dlgReturn').showModal();
+}
+$('#r-prod').addEventListener('change', () => {
+  retRows = formRows(prodOf($('#r-prod').value), []);
+  $('#r-pkgs').innerHTML = pkgHtml(retRows); bindRows($('#r-pkgs'), retRows, retPreview); retPreview();
+});
+$('#r-ship').addEventListener('input', retPreview);
+$('#fReturn').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const productId = $('#r-prod').value, date = $('#r-date').value, items = rowsToItems(retRows);
+  if (!productId || !date) return toast('Pilih tarikh dan produk.', true);
+  if (!items.length) return toast('Isi sekurang-kurangnya satu pakej yang dipulangkan.', true);
+  const rec = { id: retEditing ? retEditing.id : uid(), date, productId, productName: pname(productId), items, shipping: N($('#r-ship').value), remark: $('#r-remark').value.trim() };
+  if (retEditing) db.returns[db.returns.findIndex(r => r.id === retEditing.id)] = rec; else db.returns.push(rec);
+  save(); $('#dlgReturn').close(); render(); toast('Return disimpan.');
+});
+
+/* ---------- borang produk ---------- */
+let pRows = [], pEditing = null;
+function pkgEditHtml() {
+  return pRows.map((r, i) => `<div class="pkedit"><div class="pk-in"><label>Nama pakej</label><input type="text" maxlength="60" data-i="${i}" data-f="name" value="${esc(r.name)}" required></div><div class="pk-in"><label>COGS (${esc(cur())})</label><input type="number" min="0" step="0.01" inputmode="decimal" data-i="${i}" data-f="cogs" value="${esc(r.cogs)}" required></div><button type="button" class="icon-btn del" data-act="delPkg" data-i="${i}" title="Buang pakej" aria-label="Buang pakej">${IC.del}</button></div>`).join('');
+}
+function openProduct(id) {
+  pEditing = id ? prodOf(id) : null;
+  $('#prodTitle').textContent = pEditing ? 'Edit produk' : 'Produk baru';
+  $('#p-name').value = pEditing ? pEditing.name : '';
+  pRows = pEditing ? pEditing.packages.map(k => ({ ...k })) : [{ id: 'k' + uid(), name: 'Pakej 1', cogs: '' }];
+  $('#p-pkgs').innerHTML = pkgEditHtml(); $('#dlgProduct').showModal();
+}
+$('#p-pkgs').addEventListener('input', ev => { const t = ev.target; if (t.dataset.i != null) pRows[+t.dataset.i][t.dataset.f] = t.value; });
+$('#fProduct').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const name = $('#p-name').value.trim();
+  if (!name) return toast('Isi nama produk.', true);
+  if (db.products.some(p => p.name.toLowerCase() === name.toLowerCase() && (!pEditing || p.id !== pEditing.id))) return toast('Nama produk ini sudah wujud.', true);
+  if (!pRows.length) return toast('Tambah sekurang-kurangnya satu pakej.', true);
+  const packages = pRows.map(r => ({ id: r.id, name: String(r.name).trim(), cogs: N(r.cogs) }));
+  if (packages.some(k => !k.name)) return toast('Setiap pakej perlu nama.', true);
+  if (pEditing) {
+    pEditing.name = name; pEditing.packages = packages;
+    db.entries.concat(db.returns).forEach(r => { if (r.productId === pEditing.id) r.productName = name; });
+  } else db.products.push({ id: uid(), name, packages });
+  save(); $('#dlgProduct').close(); render(); toast('Produk disimpan.');
+});
+
+/* ---------- backup / restore / eksport / import ---------- */
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function backup() {
+  download(`pnl-tracker-backup-${today()}.json`, JSON.stringify(db, null, 2), 'application/json');
+  db.settings.lastBackup = today(); save(); render(); toast('Backup dimuat turun. Simpan fail ini di tempat selamat.');
+}
+function readFile(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }); }
+async function restoreBackup(ev) {
+  const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await readFile(f));
+    if (!d || !Array.isArray(d.products) || !Array.isArray(d.entries) || !Array.isArray(d.returns)) throw new Error('format');
+    const ok = await ask({ title: 'Pulihkan backup?', text: `Fail ini ada ${d.products.length} produk, ${d.entries.length} rekod dan ${d.returns.length} return. Semua data sekarang akan diganti.`, ok: 'Ganti data', danger: true });
+    if (!ok) return;
+    db = migrate(d); save(); render(); toast('Data dipulihkan.');
+  } catch (e) { toast('Fail backup tidak sah.', true); }
+}
+function exportEntries() {
+  const rows = [['Tarikh', 'Produk', 'Ads', 'Fee %', 'Ads+Fee', 'Sales', 'Order', 'Visitor', 'ROAS', 'AOV', 'CPP', 'CPLV', 'CR', 'Unit', 'COGS', 'Untung Kasar', 'Margin', 'Untung Lepas Ads', 'Pakej', 'Catatan']];
+  recFiltered().slice().reverse().forEach(e => { const m = Engine.entryMetrics(e); rows.push([e.date, pname(e.productId, e.productName), N(e.ads), N(e.feeRate) * 100, +m.adsFee.toFixed(2), m.sales, m.orders, m.visitors, +m.roas.toFixed(2), +m.aov.toFixed(2), +m.cpp.toFixed(2), +m.cplv.toFixed(2), +m.cr.toFixed(4), m.qty, +m.cogs.toFixed(2), +m.gp.toFixed(2), +m.gpMargin.toFixed(4), +m.net.toFixed(2), (e.items || []).map(i => `${i.name} x${i.qty}`).join('; '), e.remark || '']); });
+  download(`rekod-harian-${today()}.csv`, '﻿' + Engine.toCSV(rows), 'text/csv;charset=utf-8');
+}
+function exportReturns() {
+  const rows = [['Tarikh', 'Produk', 'Unit', 'COGS Hangus', 'Pos Hangus', 'Jumlah Rugi', 'Pakej', 'Catatan']];
+  Engine.inRange(db.returns, ui.ret.start, ui.ret.end).filter(r => !ui.ret.product || r.productId === ui.ret.product).forEach(r => { const m = Engine.returnMetrics(r); rows.push([r.date, pname(r.productId, r.productName), m.qty, +m.cogs.toFixed(2), +m.shipping.toFixed(2), +m.loss.toFixed(2), (r.items || []).map(i => `${i.name} x${i.qty}`).join('; '), r.remark || '']); });
+  download(`return-rts-${today()}.csv`, '﻿' + Engine.toCSV(rows), 'text/csv;charset=utf-8');
+}
+async function importLegacyFiles(ev) {
+  const files = [...ev.target.files]; ev.target.value = ''; if (!files.length) return;
+  const tables = {};
+  for (const f of files) {
+    const rows = Engine.csvToObjects(await readFile(f)); if (!rows.length) continue;
+    const h = rows[0];
+    if ('COGS_P1' in h) tables.Products = rows;
+    else if ('AdsSpentWithFee' in h) tables.ProductReport = rows;
+    else if ('GrossProfitMargin' in h) tables.GrossProfit = rows;
+    else if ('TotalReturnLoss' in h) tables.ProductReturn = rows;
+  }
+  if (!Object.keys(tables).length) return toast('Tiada fail P/L Tracker Pro dikenali. Semak fail CSV.', true);
+  const r = Engine.importLegacy(tables, uid);
+  const map = {};
+  const newProds = [];
+  r.products.forEach(p => {
+    const ex = db.products.find(x => x.name.toLowerCase() === p.name.toLowerCase());
+    if (ex) { map[p.id] = ex.id; p.packages.forEach(k => { if (!ex.packages.some(x => x.id === k.id)) ex.packages.push(k); }); } else { newProds.push(p); map[p.id] = p.id; }
+  });
+  const ok = await ask({ title: 'Import data lama?', text: `Akan ditambah: ${newProds.length} produk baru, ${r.entries.length} rekod harian dan ${r.returns.length} return.${r.warnings.length ? '\n\nNota: ' + r.warnings.join(' ') : ''}`, ok: 'Import' });
+  if (!ok) return;
+  db.products.push(...newProds);
+  r.entries.forEach(e => { e.productId = map[e.productId]; db.entries.push(e); });
+  r.returns.forEach(e => { e.productId = map[e.productId]; db.returns.push(e); });
+  save(); render(); toast('Import selesai.');
+}
+
+/* ---------- data contoh ---------- */
+function loadSample() {
+  const prod = { id: uid(), name: 'Produk Contoh', packages: [{ id: 'k1', name: 'Pakej 1 (1 botol)', cogs: 15 }, { id: 'k2', name: 'Pakej 2 (2 botol)', cogs: 28 }, { id: 'k3', name: 'Pakej 3 (3 botol)', cogs: 40 }] };
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const price = [59, 109, 149];
+  db.products.push(prod);
+  for (let i = 44; i >= 0; i--) {
+    const q = [Math.round(3 + rnd() * 4), Math.round(2 + rnd() * 3), Math.round(rnd() * 3)];
+    const orders = q[0] + q[1] + q[2];
+    db.entries.push({ id: uid(), date: Engine.addDays(today(), -i), productId: prod.id, productName: prod.name, ads: Math.round(100 + rnd() * 90), feeRate: db.settings.adsFeeRate, sales: q[0] * price[0] + q[1] * price[1] + q[2] * price[2], orders, visitors: Math.round(orders * (25 + rnd() * 30)), items: q.map((n, k) => ({ pkgId: prod.packages[k].id, name: prod.packages[k].name, qty: n, cogs: prod.packages[k].cogs })).filter(x => x.qty > 0), remark: '' });
+  }
+  [30, 17, 6].forEach(d => db.returns.push({ id: uid(), date: Engine.addDays(today(), -d), productId: prod.id, productName: prod.name, items: [{ pkgId: 'k1', name: prod.packages[0].name, qty: 2, cogs: 15 }], shipping: 9, remark: 'Pelanggan tak ambil parsel' }));
+  save(); render(); toast('Data contoh dimuatkan. Padam di menu Tetapan bila siap.');
+}
+
+/* ---------- pengendali klik ---------- */
+const setRange = (a, b) => { ui.dash.start = a; ui.dash.end = b; render(); };
+const actionsMap = {
+  nav: b => nav(b.dataset.v),
+  preset: b => {
+    const t = new Date(), p = b.dataset.p;
+    if (p === 'month') setRange(Engine.fmtDate(new Date(t.getFullYear(), t.getMonth(), 1)), today());
+    else if (p === 'last') setRange(Engine.fmtDate(new Date(t.getFullYear(), t.getMonth() - 1, 1)), Engine.fmtDate(new Date(t.getFullYear(), t.getMonth(), 0)));
+    else setRange(Engine.addDays(today(), -(+p - 1)), today());
+  },
+  print: () => window.print(),
+  rtab: b => { ui.rec.tab = b.dataset.t; render(); },
+  clearRec: () => { Object.assign(ui.rec, { start: '', end: '', product: '' }); render(); },
+  clearRet: () => { Object.assign(ui.ret, { start: '', end: '', product: '' }); render(); },
+  newEntry: () => openEntry(), editEntry: b => openEntry(b.dataset.id),
+  delEntry: async b => { if (await ask({ title: 'Padam rekod?', text: 'Rekod harian ini akan dipadam.', ok: 'Padam', danger: true })) { db.entries = db.entries.filter(e => e.id !== b.dataset.id); save(); render(); toast('Rekod dipadam.'); } },
+  newReturn: () => openReturn(), editReturn: b => openReturn(b.dataset.id),
+  delReturn: async b => { if (await ask({ title: 'Padam rekod return?', text: 'Rekod ini akan dipadam.', ok: 'Padam', danger: true })) { db.returns = db.returns.filter(e => e.id !== b.dataset.id); save(); render(); toast('Rekod dipadam.'); } },
+  newProduct: () => openProduct(), editProduct: b => openProduct(b.dataset.id),
+  delProduct: async b => {
+    const p = prodOf(b.dataset.id);
+    if (await ask({ title: `Padam “${p.name}”?`, text: 'Rekod harian dan return produk ini kekal, tetapi produk hilang dari senarai pilihan.', ok: 'Padam', danger: true })) { db.products = db.products.filter(x => x.id !== p.id); save(); render(); toast('Produk dipadam.'); }
+  },
+  addPkg: () => { pRows.push({ id: 'k' + uid(), name: '', cogs: '' }); $('#p-pkgs').innerHTML = pkgEditHtml(); },
+  delPkg: b => { pRows.splice(+b.dataset.i, 1); $('#p-pkgs').innerHTML = pkgEditHtml(); },
+  editTarget: async () => {
+    const v = await ask({ title: 'Target sales bulanan', text: 'Berapa sasaran sales sebulan?', ok: 'Simpan', field: { label: `Target (${cur()})`, value: db.settings.monthlyTarget } });
+    if (v === null) return; const n = N(v);
+    if (n <= 0) return toast('Masukkan nilai lebih daripada 0.', true);
+    db.settings.monthlyTarget = n; save(); render(); toast('Target dikemas kini.');
+  },
+  backup, exportEntries, exportReturns, sample: loadSample,
+  dismissBanner: () => { ui.bannerOff = true; renderBanner(); },
+  wipe: async () => { if (await ask({ title: 'Padam semua data?', text: 'Semua produk, rekod dan return akan hilang selamanya.', ok: 'Ya, padam semua', danger: true })) { const s = db.settings; db = blank(); db.settings = s; save(); render(); toast('Semua data dipadam.'); } }
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b && actionsMap[b.dataset.act]) actionsMap[b.dataset.act](b); });
+
+/* ---------- pengendali penapis ---------- */
+[['dash', 'start'], ['dash', 'end'], ['dash', 'prod'], ['rec', 'start'], ['rec', 'end'], ['rec', 'prod'], ['ret', 'start'], ['ret', 'end'], ['ret', 'prod']].forEach(([k, f]) => {
+  $(`#${k}-${f}`).addEventListener('change', e => { ui[k === 'dash' ? 'dash' : k === 'rec' ? 'rec' : 'ret'][f === 'prod' ? 'product' : f] = e.target.value; render(); });
+});
+
+/* ---------- mula ---------- */
+render();
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { }
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => { });
+</script>
+</body>
+</html>

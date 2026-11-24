@@ -1,0 +1,14 @@
+{
+  "name": "P/L Tracker Free",
+  "short_name": "P/L Tracker",
+  "description": "Jejak untung rugi bisnes online: ads, sales, COGS dan RTS.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "lang": "ms",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
